@@ -15,12 +15,16 @@ if [ $# -eq 0 ]
 		t=".certs" # File extension for temporary file containing server certificates.  Removed on cleanup
 		c=$1$t	# Append .certs extension tp domain name text to create for example: www.example.com.certs
 		openssl s_client -showcerts -servername $1 -connect $1:443 2>/dev/null </dev/null > $c # Use OpenSSL to connect to and reteive server certificates and output to temp file
+		echo "Obtained certificates.  Extracting required certificate."
 		e=".pem" # File extension for OpenSSL PEM file to be used to decrypt live or captured HTTPS data
 		n=$1$e # Create final output name: www.example.com.pem
 						
 		sed -n '/-----BEGIN CERTIFICATE-----/,/-----END CERTIFICATE-----/p; /-----END CERTIFICATE-----/q' $c > $n # Pull only PEM certificate and discard all other data, write to final output file
+		echo "Certificate extracted and written to $n"
+		echo "Cleaning up..."
 
 		# cleanup
 		rm *.certs
+		echo "Complete."
 		
 fi
